@@ -164,7 +164,7 @@ class Flask(object):
         f = flask.Flask(__name__)
         f.add_url_rule("/", None, self.main_page)
         f.add_url_rule("/last_election", None, self.last_election)
-        f.run(host='0.0.0.0', port=self.port)
+        f.run(host='0.0.0.0', port=self.port, threaded=True)
 
 
 class Tasks(object):
