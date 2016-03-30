@@ -18,62 +18,9 @@ import random
 import time
 import threading
 
+
 import flask
-
-
-TEMPLATE = """
-<html>
-<head>
-    <title>%(title)s</title>
-    <style>
-        .left_cell {
-                clear: left;
-            float:left;
-            width: 100px;
-            text-align:right;
-            border-right: 1px dashed;
-            padding-right: 10px;
-            font-size: 18px;
-        }
-        .cell {
-            float:left;
-            width: 100px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-right: 1px dashed;
-            font-size: 18px;
-            text-align: center
-        }
-        .right_cell {
-            float:left;
-            width: 100px;
-            padding-left: 10px;
-            font-size: 18px;
-        }
-        .header_cell{
-            border-bottom: 1px dashed;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        br {
-            clear:left;
-        }
-    </style>
-</head>
-<body>
-    <h1>%(title)s</h1>
-    <span style="font-size: 20px; margin-bottom: 50px;">
-        The lucky man for the next meeting [%(date)s)] : <b>%(name)s</b>
-    </span>
-    <h2>Score board</h2>
-    %(scores)s
-    <h2>History of elections</h2>
-    %(history)s
-</body>
-</html>
-"""
+from flask import render_template
 
 
 class Flask(object):
@@ -115,7 +62,10 @@ class Flask(object):
         table.append("</div><br/>")
         return "\n".join(table)
 
-    def main_page(self):
+    def last_election(self):
+        return "%s" % str(self.api.get_last_election())[1:-1]
+
+    def index(self):
         election = self.api.get_last_election()
         if election:
             if election in self._cache:
@@ -135,35 +85,29 @@ class Flask(object):
                     headers=["Date", "Time", "Weekday", "Leader"],
                     formaters={"leader": lambda o: o.lucky_man.name,
                                "date": lambda o: o.datetime.strftime(
-                                       "%y.%m.%d"),
+                                   "%y.%m.%d"),
                                "time":
                                    lambda o: "%s UTC" %
                                              o.datetime.strftime("%H:%M")})
 
-                response = TEMPLATE % {
-                    "title": self.name,
-                    "date": election.date,
-                    "name": election.lucky_man.name,
-                    "scores": scores,
-                    "history": history
-                }
-                self._cache = {election: response}
-                return response
+                return render_template("index.html",
+                                       title=self.name,
+                                       date=election.date,
+                                       name=election.lucky_man.name,
+                                       scores=scores,
+                                       history=history)
         else:
-            return ("<html>"
-                    "<body>"
-                    "    <h1>There is no elections</h1>"
-                    "</body>"
-                    "</html>")
-
-    def last_election(self):
-        return "%s" % str(self.api.get_last_election())[1:-1]
+            return render_template("default.html")
 
     def __call__(self):
         """process worker"""
-        f = flask.Flask(__name__)
-        f.add_url_rule("/", None, self.main_page)
+        f = flask.Flask(__name__,
+                        template_folder='templates',
+                        static_folder='static')
+
         f.add_url_rule("/last_election", None, self.last_election)
+        f.add_url_rule("/", None,  self.index)
+
         f.run(host='0.0.0.0', port=self.port, threaded=True)
 
 
@@ -240,3 +184,7 @@ def start(api, port, name):
             time.sleep(0.5)
         except KeyboardInterrupt:
             should_stop.set()
+
+
+if __name__ == '__main__':
+    pass
