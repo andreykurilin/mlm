@@ -61,8 +61,8 @@ class Event(BASE):
 
     def __str__(self):
         return "%s: %s at %s UTC" % (self.type.capitalize(),
-                                    self.weekday,
-                                    self.time)
+                                     self.weekday,
+                                     self.time)
 
 
 class Election(BASE):
