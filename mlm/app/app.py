@@ -214,7 +214,7 @@ class Tasks(object):
 
                 # sleep until next meeting starts or should_stop event isSet.
                 while (datetime.datetime.utcnow() <
-                        (date + datetime.timedelta(minutes=5)) or
+                        (date + datetime.timedelta(minutes=5)) and
                         not self.should_stop.isSet()):
                     time.sleep(1)
 
