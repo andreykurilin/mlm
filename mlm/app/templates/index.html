@@ -6,8 +6,12 @@
         The lucky man for the next meeting [{{ date }}] : <b>{{ name }}</b>
     </span>
     <h2>Score board</h2>
-    {{ scores }}
+    {% autoescape false %}
+        {{ scores }}
+    {% endautoescape %}
     <h2>History of elections</h2>
-    {{ history }}
+    {% autoescape false %}
+        {{ history }}
+    {% endautoescape %}
 </body>
 </html>
