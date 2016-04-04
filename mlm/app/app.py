@@ -123,7 +123,7 @@ class Tasks(object):
             elections = self.api.get_all_elections()
 
             election = [e for e in elections
-                        if e.datetime == date and e.meeting == meeting]
+                        if e.datetime == date and e.meeting.id == meeting.id]
 
             print("Meeting: %s" % meeting)
             print("Date %s" % date)
@@ -153,7 +153,7 @@ class Tasks(object):
                         break
                     upto += w
                 print("New leader: %s" % lucky_man)
-                self.api.save_election(meeting, date, lucky_man)
+                self.api.save_election(meeting, date, lucky_man.id)
             else:
 
                 # sleep until next meeting starts or should_stop event isSet.

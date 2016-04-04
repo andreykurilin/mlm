@@ -71,9 +71,9 @@ class Election(BASE):
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     datetime = sa.Column(sa.DateTime)
     lucky_man_name = sa.Column(sa.String(250), sa.ForeignKey('member.name'))
-    lucky_man = sa_orm.relationship(Member)
+    lucky_man = sa_orm.relationship(Member, lazy='subquery')
     meeting_id = sa.Column(sa.Integer, sa.ForeignKey('event.id'))
-    meeting = sa_orm.relationship(Event)
+    meeting = sa_orm.relationship(Event, lazy='subquery')
 
     @property
     def date(self):
