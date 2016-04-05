@@ -29,6 +29,7 @@ class Member(BASE):
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     name = sa.Column(sa.String(250), unique=True)
+    email = sa.Column(sa.String(250), unique=True, nullable=False)
     active = sa.Column(sa.Boolean, default=True)
     leader_score = sa.Column(sa.Integer, default=0)
 

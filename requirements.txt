@@ -2,3 +2,5 @@ pbr>=0.6,!=0.7,<1.0 # remove someday this requirement
 Flask
 sqlalchemy
 tabulate
+Jinja2==2.8
+mock==1.3.0
