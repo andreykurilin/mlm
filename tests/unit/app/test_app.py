@@ -1,7 +1,7 @@
 import threading
 import mock
 
-from mlm.app import api
+from mlm import api
 from mlm.app.app import Tasks
 from mlm.app.config import TEMPLATE_DIR, EMAIL_TEMPLATE, EMAIL_FROM
 from mlm.app.db_models import Member

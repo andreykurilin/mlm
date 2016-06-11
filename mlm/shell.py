@@ -23,7 +23,7 @@ import sys
 import argparse
 
 import mlm
-from mlm.app import api
+from mlm import api
 from mlm import commands
 from mlm.commands import utils
 
