@@ -31,6 +31,7 @@ cover
 .testrepository
 *.sqlite
 .venv
+.cache
 
 # Docs
 doc/source/_build/
