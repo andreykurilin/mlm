@@ -17,10 +17,12 @@ import multiprocessing
 import random
 import time
 import threading
-
+import smtplib
 
 import flask
+from jinja2 import Environment, FileSystemLoader
 from flask import render_template
+from mlm.app.config import TEMPLATE_DIR, EMAIL_TEMPLATE, EMAIL_FROM, SMTP_URL
 
 
 class Flask(object):
@@ -116,6 +118,28 @@ class Tasks(object):
         self.api = api
         self.should_stop = should_stop
 
+    def _render_html(self, template_dir, file_name, **kwargs):
+        j2_env = Environment(loader=FileSystemLoader(template_dir),
+                             trim_blocks=True)
+
+        return j2_env.get_template(file_name).render(**kwargs)
+
+    def send_email_notification(self, lucky_man, date):
+        """Sends email notification to lucky man by email.
+
+        :param lucky_man: mlm.app.db_models.Member object of current leader
+        :param date: date of meeting
+        """
+        email_message = self._render_html(TEMPLATE_DIR, EMAIL_TEMPLATE,
+                                          username=lucky_man.name,
+                                          date=date)
+        try:
+            server = smtplib.SMTP(SMTP_URL)
+            server.sendmail(EMAIL_FROM, lucky_man.email, email_message)
+            print("Successfully sent email")
+        except smtplib.SMTPException:
+            print("Error: unable to send email")
+
     def process_elections(self):
         while not self.should_stop.isSet():
             meeting, date = self.api.get_next_meeting()
@@ -153,7 +177,10 @@ class Tasks(object):
                         break
                     upto += w
                 print("New leader: %s" % lucky_man)
-                self.api.save_election(meeting, date, lucky_man.id)
+                t = threading.Thread(target=self.send_email_notification,
+                                     args=(lucky_man, date))
+                t.start()
+                self.api.save_election(meeting, date, lucky_man)
             else:
 
                 # sleep until next meeting starts or should_stop event isSet.
