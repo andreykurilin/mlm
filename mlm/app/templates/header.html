@@ -1,4 +1,18 @@
 <head>
     <title>{{ title if title  else "There is no elections" }}</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script>
+        function showContent(elem_name) {
+            var elems = document.getElementsByClassName("content-block")
+            for (var i = 0; i < elems.length; i++) {
+                if (elems[i].id == elem_name) {
+                    elems[i].style.display = "block"
+                } else {
+                    elems[i].style.display = "none"
+                }
+            }
+        }
+    </script>
+
 </head>

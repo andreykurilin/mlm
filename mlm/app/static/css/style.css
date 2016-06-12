@@ -1,5 +1,5 @@
 .left_cell {
-        clear: left;
+    clear: left;
     float:left;
     width: 100px;
     text-align:right;
@@ -31,4 +31,40 @@
 }
 br {
     clear:left;
+}
+
+body {
+    font-family: monospace;
+}
+
+#control-panel {
+    clear: left;
+    text-align: center;
+    display: block;
+    height: 70px;
+    width: 552px;
+    margin: 0 auto;
+}
+
+.panel-button {
+    float:left;
+    width: 150px;
+    height: 30px;
+    background-color: #ddd8d8;;
+    margin: 10px 15px 10px 15px;
+    text-align: center;
+    font-size: 14px;
+    padding-top: 10px;
+    border: 2px dashed;
+}
+
+#main-info {
+    clear:left;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.content-block {
+    clear: left;
 }

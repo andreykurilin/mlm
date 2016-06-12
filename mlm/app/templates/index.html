@@ -1,17 +1,50 @@
 <html>
 {% include 'header.html' %}
 <body>
-    <h1>{{ title }}</h1>
-    <span style="font-size: 20px; margin-bottom: 50px;">
-        The lucky man for the next meeting [{{ date }}] : <b>{{ name }}</b>
-    </span>
-    <h2>Score board</h2>
-    {% autoescape false %}
-        {{ scores }}
-    {% endautoescape %}
-    <h2>History of elections</h2>
-    {% autoescape false %}
-        {{ history }}
-    {% endautoescape %}
+    <div style="width: 800px; margin-right: auto; margin-left: auto;">
+        <pre style="clear:left; font-size: 6px;">
+ /$$      /$$                       /$$     /$$                           /$$                                 /$$                    /$$              /$$$$$$$                                      /$$
+| $$$    /$$$                      | $$    |__/                          | $$                                | $$                   | $/             | $$__  $$                                    | $$
+| $$$$  /$$$$  /$$$$$$   /$$$$$$  /$$$$$$   /$$ /$$$$$$$   /$$$$$$       | $$        /$$$$$$   /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$|_//$$$$$$$      | $$  \ $$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+| $$ $$/$$ $$ /$$__  $$ /$$__  $$|_  $$_/  | $$| $$__  $$ /$$__  $$      | $$       /$$__  $$ |____  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$_____/      | $$$$$$$  /$$__  $$ |____  $$ /$$__  $$ /$$__  $$
+| $$  $$$| $$| $$$$$$$$| $$$$$$$$  | $$    | $$| $$  \ $$| $$  \ $$      | $$      | $$$$$$$$  /$$$$$$$| $$  | $$| $$$$$$$$| $$  \__/|  $$$$$$       | $$__  $$| $$  \ $$  /$$$$$$$| $$  \__/| $$  | $$
+| $$\  $ | $$| $$_____/| $$_____/  | $$ /$$| $$| $$  | $$| $$  | $$      | $$      | $$_____/ /$$__  $$| $$  | $$| $$_____/| $$       \____  $$      | $$  \ $$| $$  | $$ /$$__  $$| $$      | $$  | $$
+| $$ \/  | $$|  $$$$$$$|  $$$$$$$  |  $$$$/| $$| $$  | $$|  $$$$$$$      | $$$$$$$$|  $$$$$$$|  $$$$$$$|  $$$$$$$|  $$$$$$$| $$       /$$$$$$$/      | $$$$$$$/|  $$$$$$/|  $$$$$$$| $$      |  $$$$$$$
+|__/     |__/ \_______/ \_______/   \___/  |__/|__/  |__/ \____  $$      |________/ \_______/ \_______/ \_______/ \_______/|__/      |_______/       |_______/  \______/  \_______/|__/       \_______/
+                                                          /$$  \ $$
+                                                         |  $$$$$$/
+                                                          \______/
+        </pre>
+
+        <hr />
+
+        <div id="main-info"><i>Team</i>: <b>Nova</b> <br />
+            <i>Next meeting date</i>: <b>{{ date }}</b> <br />
+            <i>The lucky man for it</i>: <b>{{ name }}</b> <br />
+        </div>
+
+        <hr style="clear: left;"/>
+
+        <div id="control-panel">
+            <div class="panel-button" onclick="showContent('stats')" onmouseenter="this.style.background='#f8f8f8'" onmouseleave="this.style.background='#ddd8d8'">Stats</div>
+            <div class="panel-button" onclick="showContent('history')" onmouseenter="this.style.background='#f8f8f8'" onmouseleave="this.style.background='#ddd8d8'">History</div>
+            <div class="panel-button" onclick="showContent('pto')" onmouseenter="this.style.background='#f8f8f8'" onmouseleave="this.style.background='#ddd8d8'">PTOs</div>
+        </div>
+
+        <div id="stats" class="content-block">
+
+            <h1>Scores</h1>
+            {% autoescape false %}
+                {{ scores }}
+            {% endautoescape %}
+        </div>
+        <div id="history" class="content-block" style="display: none">
+            <h1>History of elections</h1>
+            {% autoescape false %}
+                {{ history }}
+            {% endautoescape %}
+        </div>
+        <div id="pto" class="content-block" style="display: none">this page is under construction</div>
+    </div>
 </body>
 </html>
