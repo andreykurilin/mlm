@@ -89,7 +89,7 @@ class API(object):
         return self._db_api.get_last_election()
 
     def save_election(self, meeting, date, member_id):
-        self._db_api.save_election(meeting, date, member_id)
+        return self._db_api.save_election(meeting, date, member_id)
 
     def start_app(self):
         app.start(self, self._config)

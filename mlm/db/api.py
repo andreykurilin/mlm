@@ -100,7 +100,9 @@ class DBAPI(object):
         session = self.get_session()
         with session.begin():
             member = self._get_member(member_id, session=session)
-            session.add(models.Election(datetime=date,
-                                        lucky_man=member,
-                                        meeting=meeting))
+            election = models.Election(datetime=date,
+                                       lucky_man=member,
+                                       meeting=meeting)
+            session.add(election)
             member.leader_score += 1
+        return election
