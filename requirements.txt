@@ -1,5 +1,6 @@
 pbr>=0.6,!=0.7,<1.0 # remove someday this requirement
-Flask
-sqlalchemy
-tabulate
 Jinja2==2.8
+Flask
+tabulate
+six
+sqlalchemy

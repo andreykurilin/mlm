@@ -22,14 +22,12 @@ import smtplib
 import flask
 from jinja2 import Environment, FileSystemLoader
 from flask import render_template
-from mlm.app.config import TEMPLATE_DIR, EMAIL_TEMPLATE, EMAIL_FROM, SMTP_URL
 
 
 class Flask(object):
-    def __init__(self, api, port, name):
+    def __init__(self, api, config):
         self.api = api
-        self.port = port
-        self.name = name
+        self.config = config
         self._cache = {}
 
     def _make_table(self, data, headers, formaters=None):
@@ -93,7 +91,7 @@ class Flask(object):
                                              o.datetime.strftime("%H:%M")})
 
                 return render_template("index.html",
-                                       title=self.name,
+                                       title=self.config.app.name,
                                        date=election.date,
                                        name=election.lucky_man.name,
                                        scores=scores,
@@ -110,12 +108,13 @@ class Flask(object):
         f.add_url_rule("/last_election", None, self.last_election)
         f.add_url_rule("/", None,  self.index)
 
-        f.run(host='0.0.0.0', port=self.port, threaded=True)
+        f.run(host='0.0.0.0', port=self.config.app.port, threaded=True)
 
 
 class Tasks(object):
-    def __init__(self, api, should_stop):
+    def __init__(self, api, config, should_stop):
         self.api = api
+        self.config = config
         self.should_stop = should_stop
 
     def _render_html(self, template_dir, file_name, **kwargs):
@@ -130,12 +129,14 @@ class Tasks(object):
         :param lucky_man: mlm.app.db_models.Member object of current leader
         :param date: date of meeting
         """
-        email_message = self._render_html(TEMPLATE_DIR, EMAIL_TEMPLATE,
+        path, template = self.config.mail_notification.template.rsplit("/", 1)
+        email_message = self._render_html(path, template,
                                           username=lucky_man.name,
                                           date=date)
         try:
-            server = smtplib.SMTP(SMTP_URL)
-            server.sendmail(EMAIL_FROM, lucky_man.email, email_message)
+            server = smtplib.SMTP(self.config.mail_notification.smtp_url)
+            server.sendmail(self.config.mail_notification.email_from,
+                            lucky_man.email, email_message)
             print("Successfully sent email")
         except smtplib.SMTPException:
             print("Error: unable to send email")
@@ -197,12 +198,12 @@ class Tasks(object):
         elections_t.join()
 
 
-def start(api, port, name):
+def start(api, config):
     should_stop = threading.Event()
-    tasks_p = multiprocessing.Process(name="tasks", target=Tasks(api,
+    tasks_p = multiprocessing.Process(name="tasks", target=Tasks(api, config,
                                                                  should_stop))
     flask_p = multiprocessing.Process(name="flask",
-                                      target=Flask(api, port, name))
+                                      target=Flask(api, config))
 
     tasks_p.start()
     flask_p.start()

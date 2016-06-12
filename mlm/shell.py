@@ -43,6 +43,9 @@ def main(input_args=None):
                         action='version',
                         version=mlm.__version__)
 
+    parser.add_argument('--config-file', type=str, metavar="<file>",
+                        help="Path to configuration file.")
+
     # all subcommands
     subcommands = parser.add_subparsers(help='<subcommands>')
     for importer, modname, _ in pkgutil.iter_modules(commands.__path__):
@@ -69,7 +72,7 @@ def main(input_args=None):
 
     # parse and run
     args = parser.parse_args(input_args)
-    args.func(api.API(), args)
+    args.func(api.API(args.config_file), args)
 
 
 if __name__ == "__main__":

@@ -21,30 +21,28 @@ from sqlalchemy import orm as sa_orm
 
 from mlm.app import app
 from mlm.app import db_models
+from mlm import config
 from mlm import consts
 
 
 class API(object):
 
-    home_dir = os.path.expanduser("~/.mlm")
-
-    def __init__(self):
+    def __init__(self, config_file):
+        self._config = config.Config(config_file)
         self.__db_session = None
-        if not os.path.exists(self.home_dir):
-            os.mkdir(self.home_dir)
 
-        self._db_engine = sa.create_engine(self.db_file)
+        if not os.path.exists(config.HOME_DIR):
+            os.mkdir(config.HOME_DIR)
+
+        self._db_engine = sa.create_engine(
+            self._config.db.sqlite_connection_string)
         # db_models.BASE.metadata.bind = self._db_engine
         self._session_factory = sa_orm.sessionmaker(bind=self._db_engine,
                                                     expire_on_commit=False,
                                                     autocommit=True)
 
-        if not os.path.exists(self.db_file):
+        if not os.path.exists(self._config.db.sqlite_connection_string):
             self.init_db()
-
-    @property
-    def db_file(self):
-        return "sqlite:///%s/db.sql" % self.home_dir
 
     def get_db_session(self):
         return self._session_factory()
@@ -148,5 +146,5 @@ class API(object):
                                            meeting=meeting))
             member.leader_score += 1
 
-    def start_app(self, port, name):
-        app.start(self, port, name)
+    def start_app(self):
+        app.start(self, self._config)

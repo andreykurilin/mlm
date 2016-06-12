@@ -1,18 +1,18 @@
 import threading
 import mock
 
-from mlm import api
 from mlm.app.app import Tasks
-from mlm.app.config import TEMPLATE_DIR, EMAIL_TEMPLATE, EMAIL_FROM
 from mlm.app.db_models import Member
+from mlm import config
 from tests.unit import test
 
 
 class TasksTestCase(test.TestCase):
     def setUp(self):
         super(TasksTestCase, self).setUp()
+        self.config = config.Config()
         should_stop = threading.Event()
-        self.task = Tasks(api, should_stop)
+        self.task = Tasks(None, self.config, should_stop)
 
     @mock.patch('mlm.app.app.FileSystemLoader.get_source')
     def test_render_template(self, get_source_mock):
@@ -22,8 +22,8 @@ class TasksTestCase(test.TestCase):
         get_source_mock.return_value = ("{{ username }} {{ date }}",
                                         filename, 9999)
 
-        message = self.task._render_html(TEMPLATE_DIR,
-                                         EMAIL_TEMPLATE,
+        message = self.task._render_html("templates",
+                                         "",
                                          username=name,
                                          date=date)
         self.assertIn(name, message)
@@ -42,6 +42,6 @@ class TasksTestCase(test.TestCase):
 
         self.task.send_email_notification(lucky_man, date)
 
-        send_mail_mock.assert_called_with(EMAIL_FROM,
-                                          lucky_man.email,
-                                          message)
+        send_mail_mock.assert_called_with(
+            self.config.mail_notification.email_from, lucky_man.email,
+            message)

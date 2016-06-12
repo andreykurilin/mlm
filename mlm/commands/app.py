@@ -16,11 +16,6 @@ from mlm.commands import utils
 
 
 class App(utils.BaseCommand):
-    @utils.args("--name", type=str, metavar="<name>",
-                default='Meeting Leader Manager',
-                help="Name of the app. Defaults to 'Meeting Leader Manager'")
-    @utils.args("--port", type=int, metavar="<port>", default=5000,
-                help="The port of the webserver. Defaults to 5000")
     def start(self, api, args):
         """Add new member."""
-        api.start_app(args.port, args.name)
+        api.start_app()
