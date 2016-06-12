@@ -13,75 +13,33 @@
 #    under the License.
 
 import datetime as dt
-import os
-
-import sqlalchemy as sa
-from sqlalchemy import exc
-from sqlalchemy import orm as sa_orm
 
 from mlm.app import app
-from mlm.app import db_models
 from mlm import config
 from mlm import consts
+from mlm.db import api as dbapi
 
 
 class API(object):
 
     def __init__(self, config_file):
         self._config = config.Config(config_file)
-        self.__db_session = None
-
-        if not os.path.exists(config.HOME_DIR):
-            os.mkdir(config.HOME_DIR)
-
-        self._db_engine = sa.create_engine(
-            self._config.db.sqlite_connection_string)
-        # db_models.BASE.metadata.bind = self._db_engine
-        self._session_factory = sa_orm.sessionmaker(bind=self._db_engine,
-                                                    expire_on_commit=False,
-                                                    autocommit=True)
-
-        if not os.path.exists(self._config.db.sqlite_connection_string):
-            self.init_db()
-
-    def get_db_session(self):
-        return self._session_factory()
-
-    def db_query(self, model, session=None):
-        session = session or self.get_db_session()
-        return session.query(model)
-
-    def init_db(self):
-        db_models.BASE.metadata.create_all(self.get_db_session().bind)
+        self._db_api = dbapi.DBAPI(self._config)
 
     def add_member(self, name):
         """Add new member to team."""
-        self.get_db_session().add(db_models.Member(name=name))
+        self._db_api.add_member(name)
 
-    def get_member(self, member_id, session=None):
+    def get_member(self, member_id):
         """Obtain member by ID."""
-        session = session or self.get_db_session()
-        member = self.db_query(db_models.Member, session).filter_by(
-            id=member_id).first()
-        if not member:
-            raise Exception("There is no member with id '%s'." % member_id)
-        return member
+        return self._db_api.get_member(member_id)
 
     def get_members(self, only_active=False):
         """Obtain all members."""
-        if only_active:
-            return self.db_query(db_models.Member).filter_by(active=True).all()
-        return self.db_query(db_models.Member).all()
+        return self._db_api.get_members(only_active)
 
     def deactivate_member(self, member_id):
-        session = self.get_db_session()
-        with session.begin():
-            member = self.get_member(member_id)
-            if not member.active:
-                raise Exception("%(name)s (id=%(id)s) is already inactive" % {
-                    "name": member.name, "id": member.id})
-            member.active = False
-        return member
+        return self._db_api.deactivate_member(member_id)
 
     def add_meeting(self, weekday, time):
         date = consts.get_first_monday()
@@ -91,16 +49,10 @@ class API(object):
         time = dt.datetime.strptime(time, "%H:%M")
         date = date.replace(hour=time.hour, minute=time.minute)
 
-        meeting = db_models.Event(type="meeting", datetime=date)
-        try:
-            self.get_db_session().add(meeting)
-        except exc.IntegrityError:
-            raise ValueError("%s is already exist." % meeting)
+        self._db_api.add_meeting(date)
 
     def get_meetings(self):
-        meetings = self.db_query(db_models.Event).filter_by(
-                type="meeting").all()
-        return sorted(meetings, key=lambda m: m.datetime)
+        return sorted(self._db_api.get_meetings(), key=lambda m: m.datetime)
 
     def get_next_meeting(self):
         now = dt.datetime.utcnow()
@@ -131,20 +83,13 @@ class API(object):
         return next_meeting, date
 
     def get_all_elections(self):
-        return self.db_query(db_models.Election).all()
+        return self._db_api.get_elections()
 
     def get_last_election(self):
-        return self.db_query(db_models.Election).order_by(
-                db_models.Election.id.desc()).first()
+        return self._db_api.get_last_election()
 
     def save_election(self, meeting, date, member_id):
-        session = self.get_db_session()
-        with session.begin():
-            member = self.get_member(member_id, session=session)
-            session.add(db_models.Election(datetime=date,
-                                           lucky_man=member,
-                                           meeting=meeting))
-            member.leader_score += 1
+        self._db_api.save_election(meeting, date, member_id)
 
     def start_app(self):
         app.start(self, self._config)

@@ -126,7 +126,7 @@ class Tasks(object):
     def send_email_notification(self, lucky_man, date):
         """Sends email notification to lucky man by email.
 
-        :param lucky_man: mlm.app.db_models.Member object of current leader
+        :param lucky_man: mlm.db.models.Member object of current leader
         :param date: date of meeting
         """
         path, template = self.config.mail_notification.template.rsplit("/", 1)

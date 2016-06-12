@@ -2,8 +2,8 @@ import threading
 import mock
 
 from mlm.app.app import Tasks
-from mlm.app.db_models import Member
 from mlm import config
+from mlm.db.models import Member
 from tests.unit import test
 
 
