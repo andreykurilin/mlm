@@ -46,7 +46,8 @@ class TasksTestCase(test.TestCase):
     def test_send_email_notification(self, send_mail_mock,
                                      render_template_mock):
         self.config.mail_notification._options["enabled"] = True
-        lucky_man = models.Member(name="John Doe", email="jdoe@gmail.com")
+        lucky_man = models.Member(name="John Doe",
+                                  contacts={"email": "jdoe@gmail.com"})
         date = datetime.datetime.now()
         election = models.Election(datetime=date,
                                    lucky_man=lucky_man,
@@ -65,5 +66,5 @@ class TasksTestCase(test.TestCase):
         task.notifier()
 
         send_mail_mock.assert_called_with(
-            self.config.mail_notification.email_from, lucky_man.email,
-            message)
+            self.config.mail_notification.email_from,
+            lucky_man.contacts["email"], message)

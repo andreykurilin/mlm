@@ -12,12 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
-
 import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.ext.declarative import declarative_base
 
+from mlm.db import types
 from mlm import consts
 
 
@@ -29,7 +28,7 @@ class Member(BASE):
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     name = sa.Column(sa.String(250), unique=True)
-    email = sa.Column(sa.String(250), unique=True, nullable=False)
+    contacts = sa.Column(types.JSONEncodedDict, unique=True, nullable=False)
     active = sa.Column(sa.Boolean, default=True)
     leader_score = sa.Column(sa.Integer, default=0)
 
@@ -45,8 +44,7 @@ class Event(BASE):
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     datetime = sa.Column(sa.DateTime, unique=True)
     type = sa.Column(sa.String(250))
-    # TODO: make this field as json by default
-    extra_field = sa.Column(sa.String(1000), default="{}")
+    extrafield = sa.Column(types.JSONEncodedDict, default=None)
 
     @property
     def time(self):
@@ -55,10 +53,6 @@ class Event(BASE):
     @property
     def weekday(self):
         return consts.WEEKDAYS[self.datetime.weekday()]
-
-    @property
-    def extradata(self):
-        return json.loads(self.extra_field)
 
     def __str__(self):
         return "%s: %s at %s UTC" % (self.type.capitalize(),

@@ -87,21 +87,22 @@ class Tasks(object):
         if not self.config.mail_notification.enabled:
             return
 
+        email_from = self.config.mail_notification.email_from
+        smtp_url = self.config.mail_notification.smtp_url
+        path, template = self.config.mail_notification.template.rsplit("/", 1)
+
         while not self.exit.isSet():
             if not len(self.election_queue):
                 time.sleep("1")
             else:
                 election = self.election_queue.popleft()
-                path, template = self.config.mail_notification.template.rsplit(
-                    "/", 1)
                 email_message = self._render_html(
                     path, template, username=election.lucky_man.name,
                     date=election.date)
                 try:
-                    server = smtplib.SMTP(
-                        self.config.mail_notification.smtp_url)
-                    server.sendmail(self.config.mail_notification.email_from,
-                                    election.lucky_man.email, email_message)
+                    server = smtplib.SMTP(smtp_url)
+                    email_to = election.lucky_man.contacts["email"]
+                    server.sendmail(email_from, email_to, email_message)
                     print("Successfully sent email")
                 except smtplib.SMTPException:
                     print("Error: unable to send email")
