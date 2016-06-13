@@ -35,12 +35,10 @@ _OPTIONS = {
         },
     },
     "db": {
-        "sqlite_connection_string": {
-            "defaults": "sqlite:///%s/db.sql" % HOME_DIR,
+        "sqlite_file": {
+            "defaults": "~/.mlm/db.sql",
             "type": str,
-            "description": "MLM uses sqlite to store all data. You can specify"
-                           " non default place to store sqlite file via this "
-                           "variable"
+            "description": "Path to sqlite path to store all data."
         }
     },
     "mail_notification": {

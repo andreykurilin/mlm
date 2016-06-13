@@ -24,15 +24,17 @@ from mlm.db import models
 class DBAPI(object):
     def __init__(self, config):
         self._cfg = config
+        self.connection_str = "sqlite:///%s" % os.path.expanduser(
+            self._cfg.db.sqlite_file)
 
         self._db_session = None
-        _db_engine = sa.create_engine(self._cfg.db.sqlite_connection_string)
+        _db_engine = sa.create_engine(self.connection_str)
         # db_models.BASE.metadata.bind = _db_engine
         self._session_factory = sa_orm.sessionmaker(bind=_db_engine,
                                                     expire_on_commit=False,
                                                     autocommit=True)
 
-        if not os.path.exists(self._cfg.db.sqlite_connection_string):
+        if not os.path.exists(self.connection_str):
             self.init_db()
 
     def init_db(self):
