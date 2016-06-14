@@ -111,7 +111,7 @@ class Tasks(object):
                 try:
                     server = smtplib.SMTP(smtp_url)
                     server.starttls()
-                    server.login(username,password)
+                    server.login(username, password)
 
                     server.sendmail(email_from, email_to, email_message)
                     print("Successfully sent email")
