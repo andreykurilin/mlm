@@ -99,18 +99,24 @@ class Tasks(object):
                 time.sleep("1")
             else:
                 election = self.election_queue.popleft()
+                email_to = election.lucky_man.contacts["email"]
+
                 email_message = self._render_html(
-                    path, template, username=election.lucky_man.name,
-                    date=election.date)
+                    path, template,
+                    username=election.lucky_man.name,
+                    date=election.date,
+                    email_from=email_from,
+                    email_to=email_to
+                )
                 try:
                     server = smtplib.SMTP(smtp_url)
                     server.starttls()
                     server.login(username,password)
-                    email_to = election.lucky_man.contacts["email"]
 
                     server.sendmail(email_from, email_to, email_message)
                     print("Successfully sent email")
-                except smtplib.SMTPException:
+                except smtplib.SMTPException as e:
+                    raise e
                     print("Error: unable to send email")
                 else:
                     server.quit()

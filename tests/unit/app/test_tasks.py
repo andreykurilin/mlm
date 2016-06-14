@@ -42,10 +42,11 @@ class TasksTestCase(test.TestCase):
         self.assertIn(date, message)
 
     @mock.patch('mlm.app.tasks.Tasks._render_html')
-    @mock.patch('mlm.app.tasks.smtplib.SMTP.sendmail')
-    def test_send_email_notification(self, send_mail_mock,
+    @mock.patch('mlm.app.tasks.smtplib.SMTP')
+    def test_send_email_notification(self, mock_smtp,
                                      render_template_mock):
         self.config.mail_notification._options["enabled"] = True
+
         lucky_man = models.Member(name="John Doe",
                                   contacts={"email": "jdoe@gmail.com"})
         date = datetime.datetime.now()
@@ -65,6 +66,6 @@ class TasksTestCase(test.TestCase):
 
         task.notifier()
 
-        send_mail_mock.assert_called_with(
+        mock_smtp.return_value.sendmail.assert_called_with(
             self.config.mail_notification.email_from,
             lucky_man.contacts["email"], message)
