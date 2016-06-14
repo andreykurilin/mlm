@@ -25,33 +25,31 @@ class WebServer(object):
     def _make_table(self, data, headers, formaters=None):
         table = ["<div class='table'>"]
 
-        def get_cls_for_cell(i, n):
-            """
-            :param i: index of column
-            :param n: number of columns
-            """
+        for i in range(0, len(headers)):
             if i == 0:
-                return "left_cell"
-            elif i == n:
-                return "right_cell"
-            return "cell"
+                column_cls = "left_cell"
+            elif i == len(headers) - 1:
+                column_cls = "right_cell"
+            else:
+                column_cls = "central_cell"
+            table.append("\t<div class='%s'>" % column_cls)
 
-        # Make header
-        for i in range(len(headers)):
-            cls = "header_cell %s" % get_cls_for_cell(i, len(headers)-1)
-            table.append("<div class='%s'>%s</div>" % (cls, headers[i]))
+            header = headers[i]
 
-        for row in data:
-            for i in range(len(headers)):
-                key = headers[i]
-                cls = get_cls_for_cell(i, len(headers)-1)
-                key = key.lower()
+            table.append("\t\t<div class='header_cell cell'>%s</div>" % header)
+            table.append("\t\t<hr style='border-top:1px dashed #000; "
+                         "color: white;' />")
+            for raw in data:
+                key = header.lower()
                 if key in formaters:
-                    value = formaters[key](row)
+                    value = formaters[key](raw)
                 else:
-                    value = getattr(row, key)
-                table.append("<div class='%s'>%s</div>" % (cls, value))
-        table.append("</div><br/>")
+                    value = getattr(raw, key)
+                table.append("\t\t<div class='cell'>%s</div>" % value)
+            table.append("\t</div>")
+
+        table.append("</div>")
+        
         return "\n".join(table)
 
     def last_election(self):

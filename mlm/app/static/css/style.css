@@ -1,33 +1,32 @@
 .left_cell {
     clear: left;
     float:left;
-    width: 100px;
+    min-width: 100px;
     text-align:right;
     border-right: 1px dashed;
-    padding-right: 10px;
     font-size: 18px;
 }
-.cell {
+.central_cell {
     float:left;
-    width: 100px;
-    padding-left: 10px;
-    padding-right: 10px;
+    min-width: 100px;
     border-right: 1px dashed;
     font-size: 18px;
     text-align: center
 }
 .right_cell {
     float:left;
-    width: 100px;
-    padding-left: 10px;
+    min-width: 100px;
     font-size: 18px;
 }
 .header_cell{
-    border-bottom: 1px dashed;
     margin-bottom: 10px;
-    padding-bottom: 10px;
     font-weight: bold;
     font-size: 18px;
+}
+.cell {
+    clear: left;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 br {
     clear:left;
