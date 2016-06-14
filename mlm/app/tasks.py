@@ -96,7 +96,7 @@ class Tasks(object):
 
         while not self.exit.isSet():
             if not len(self.election_queue):
-                time.sleep("1")
+                time.sleep(1)
             else:
                 election = self.election_queue.popleft()
                 email_to = election.lucky_man.contacts["email"]
