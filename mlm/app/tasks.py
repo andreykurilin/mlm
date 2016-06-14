@@ -74,7 +74,7 @@ class Tasks(object):
                     upto += w
                 print("New leader: %s" % lucky_man)
 
-                election = self.api.save_election(meeting, date, lucky_man)
+                election = self.api.save_election(meeting, date, lucky_man.id)
                 self.election_queue.append(election)
             else:
 
