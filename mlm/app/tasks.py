@@ -53,7 +53,8 @@ class Tasks(object):
                 if elections:
                     # we should elect one person two times in a row
                     previous_leader = elections[-1].lucky_man
-                    members = [m for m in members if m != previous_leader]
+                    members = [m for m in members
+                               if m.id != previous_leader.id]
 
                 choices = []
                 for m in members:
