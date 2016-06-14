@@ -49,7 +49,7 @@ class WebServer(object):
             table.append("\t</div>")
 
         table.append("</div>")
-        
+
         return "\n".join(table)
 
     def last_election(self):
