@@ -77,7 +77,7 @@ class WebServer(object):
                     headers=["Date", "Time", "Weekday", "Leader"],
                     formaters={"leader": lambda o: o.lucky_man.name,
                                "date": lambda o: o.datetime.strftime(
-                                   "%y.%m.%d"),
+                                   "%d.%m.%y"),
                                "time":
                                    lambda o: "%s UTC" %
                                              o.datetime.strftime("%H:%M")})
