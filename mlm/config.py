@@ -62,6 +62,16 @@ _OPTIONS = {
             "type": str,
             "description": "Template for notification mail."
         },
+        "login": {
+            "defaults": "username",
+            "type": str,
+            "description": "username for authentication"
+        },
+        "password": {
+            "defaults": "password",
+            "type": str,
+            "description": "password for authentication"
+        }
     }
 }
 

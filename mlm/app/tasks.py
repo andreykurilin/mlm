@@ -91,6 +91,8 @@ class Tasks(object):
         email_from = self.config.mail_notification.email_from
         smtp_url = self.config.mail_notification.smtp_url
         path, template = self.config.mail_notification.template.rsplit("/", 1)
+        username = self.config.mail_notification.login
+        password = self.config.mail_notification.password
 
         while not self.exit.isSet():
             if not len(self.election_queue):
@@ -102,11 +104,16 @@ class Tasks(object):
                     date=election.date)
                 try:
                     server = smtplib.SMTP(smtp_url)
+                    server.starttls()
+                    server.login(username,password)
                     email_to = election.lucky_man.contacts["email"]
+
                     server.sendmail(email_from, email_to, email_message)
                     print("Successfully sent email")
                 except smtplib.SMTPException:
                     print("Error: unable to send email")
+                else:
+                    server.quit()
 
     def __call__(self):
         """worker process"""
