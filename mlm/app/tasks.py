@@ -57,8 +57,9 @@ class Tasks(object):
                                if m.id != previous_leader.id]
 
                 choices = []
+                max_score = max(m.leader_score for m in members) + 1
                 for m in members:
-                    weight = len(members) - m.leader_score % len(members)
+                    weight = max_score - m.leader_score
                     # lets increase the difference between weights
                     weight *= 10
                     choices.append((m, weight))
